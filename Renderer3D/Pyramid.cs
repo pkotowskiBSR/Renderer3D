@@ -9,11 +9,14 @@ namespace Renderer3D
 {
     internal class Pyramid : Object3D
     {
-        Matrix4x4 modelMatrix = Matrix4x4.Identity;
-
+       
         public Pyramid(float a, float b, float h)
         {
-            mesh.Vertices.Add(new Vector3(-a / 2, -b/2, 0));
+            mesh.Vertices.Add(new Vector3(-a / 2, b/2, 0));
+            mesh.Vertices.Add(new Vector3(a / 2, b / 2, 0));
+            mesh.Vertices.Add(new Vector3(a / 2, b / 2, 0));
+
+
         }
 
     }
