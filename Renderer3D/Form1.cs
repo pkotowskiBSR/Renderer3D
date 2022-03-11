@@ -10,15 +10,29 @@ namespace Renderer3D
         public Form1()
         {
             InitializeComponent();
-            
+
+            camera.UpdateViewMatrix();
+            camera.UpdateProjectionMatrix(pictureBox1);
+
+            pyramid.modelMatrix *= Matrix4x4.CreateTranslation(new Vector3(100, 0, 0));
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
 
-            pyramid.Draw(g);
+            pyramid.Draw(g, camera);
         }
-               
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            pyramid.modelMatrix *= Matrix4x4.CreateRotationZ((float)(10 * Math.PI / 180));
+            pictureBox1.Invalidate();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            timer1.Start();
+        }
     }
 }
