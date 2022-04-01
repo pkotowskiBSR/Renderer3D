@@ -1,3 +1,6 @@
+using System.Net;
+using System.Net.Sockets;
+
 using System.Numerics;
 
 
@@ -5,6 +8,9 @@ namespace Renderer3D
 {
     public partial class Form1 : Form
     {
+        TcpListener server;
+        TcpClient clientServer;
+
         Pyramid pyramid = new Pyramid(100, 100, 200);
         Sphere sphere = new Sphere(100, 20, 20);
 
@@ -41,5 +47,36 @@ namespace Renderer3D
             timer1.Start();
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            server = new TcpListener(IPAddress.Parse("127.0.0.1"), 6969);
+            server.Start();
+
+            Cursor.Current = Cursors.WaitCursor;
+            //oczekiwanie na po³aczenie
+            clientServer = server.AcceptTcpClient();
+
+            Cursor.Current = Cursors.Default;
+            MessageBox.Show($"Po³¹czono z klientem ");
+            button2.Enabled = false;
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            if (clientServer == null) return;
+
+            NetworkStream ns = clientServer.GetStream();
+            if (ns.DataAvailable)
+            {
+                byte[] buffer = new byte[1024];
+                int count = ns.Read(buffer, 0, 1024);
+
+                if (count != 0)
+                {
+                    pyramid.modelMatrix *= Matrix4x4.CreateTranslation(10, 0, 0);
+                    pictureBox1.Invalidate();
+                }
+            }
+        }
     }
 }
