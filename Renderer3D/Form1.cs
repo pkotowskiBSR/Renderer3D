@@ -47,36 +47,33 @@ namespace Renderer3D
             timer1.Start();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private async void button2_Click(object sender, EventArgs e)
         {
+            button2.Enabled = false;
             server = new TcpListener(IPAddress.Parse("127.0.0.1"), 6969);
             server.Start();
 
             Cursor.Current = Cursors.WaitCursor;
             //oczekiwanie na po³aczenie
-            clientServer = server.AcceptTcpClient();
+            clientServer = await server.AcceptTcpClientAsync();
 
             Cursor.Current = Cursors.Default;
             MessageBox.Show($"Po³¹czono z klientem ");
-            button2.Enabled = false;
-        }
 
-        private void timer2_Tick(object sender, EventArgs e)
-        {
-            if (clientServer == null) return;
-
-            NetworkStream ns = clientServer.GetStream();
-            if (ns.DataAvailable)
+            while (true)
             {
-                byte[] buffer = new byte[1024];
-                int count = ns.Read(buffer, 0, 1024);
+                NetworkStream ns = clientServer.GetStream();
 
-                if (count != 0)
-                {
-                    pyramid.modelMatrix *= Matrix4x4.CreateTranslation(10, 0, 0);
-                    pictureBox1.Invalidate();
-                }
+                byte[] buffer = new byte[1024];
+                int count = await ns.ReadAsync(buffer, 0, 1024);
+
+                pyramid.modelMatrix *= Matrix4x4.CreateTranslation(10, 0, 0);
+                pictureBox1.Invalidate();
+
             }
+            
         }
+
+                    
     }
 }
